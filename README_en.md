@@ -1,188 +1,138 @@
-# android_virtual_cam
+# VCAM - Android Virtual Camera & Microphone Module
 
-[简体中文](./README.md) | [繁體中文](./README_tc.md) | [English](./README_en.md)
+[![Platform](https://img.shields.io/badge/Platform-Android%207.0%20--%2016%20(API%2024--36)-brightgreen.svg)](https://github.com/NaufalSaputraa/VCAM)
+[![Framework](https://img.shields.io/badge/Xposed-LSPosed%20%7C%20EdXposed-blue.svg)](https://github.com/NaufalSaputraa/VCAM)
+[![Version](https://img.shields.io/badge/Version-5.0%20(Modernized)-orange.svg)](https://github.com/NaufalSaputraa/VCAM/releases)
+[![License](https://img.shields.io/badge/License-MIT-purple.svg)](./LICENSE)
 
-[![Android Build](https://github.com/w2016561536/android_virtual_cam/workflows/Android%20Build/badge.svg)](https://github.com/w2016561536/android_virtual_cam/actions)
-[![Version](https://img.shields.io/badge/version-4.4-blue.svg)](https://github.com/w2016561536/android_virtual_cam/releases)
-[![Platform](https://img.shields.io/badge/platform-Android%205.0%2B-green.svg)](https://github.com/w2016561536/android_virtual_cam)
+**VCAM** is a powerful Xposed / LSPosed module for Android that replaces your physical camera preview and microphone input with your own custom videos and photos.
 
-An Xposed-based virtual camera module that replaces Android camera preview and photo capture with custom videos and images.
+---
 
 ## ⚠️ Disclaimer
 
-**DO NOT USE FOR ANY ILLEGAL PURPOSE! YOU MUST TAKE ALL RESPONSIBILITY AND CONSEQUENCES!**
+> [!WARNING]
+> This project is created strictly for **educational, security research, and app testing purposes only**. 
+> Do **NOT** use this tool for fraud, impersonation, or any illegal activities. You are solely responsible for how you use this software.
 
-This tool is for learning and research purposes only. Do not use it for any illegal activities. Users must assume all consequences and responsibilities arising from using this tool.
+---
 
-## 🌟 Key Features
+## ✨ Features
 
-- ✅ **Dual API Support**: Supports both Camera1 and Camera2 APIs
-- ✅ **Video Replacement**: Replace camera preview with custom MP4 videos
-- ✅ **Photo Replacement**: Replace captured photos with custom BMP images
-- ✅ **Audio Playback**: Optional video audio playback
-- ✅ **App Configuration UI**: 5 visual switches, no need to create files manually
-- ✅ **Private Directory Support**: Separate video configuration for each app
-- ✅ **Real-time Effect**: Configuration changes take effect immediately without restart
-- ✅ **Toast Message Control**: Option to disable toast notifications
-- ✅ **Automated Build**: GitHub Actions for automated building and releasing
+- 🎥 **Virtual Camera Feed**: Automatically replaces live camera previews in target apps with your custom `virtual.mp4` video.
+- 📸 **Virtual Photo Capture**: Replaces photo capture with custom BMP images (supports auto-conversion from JPG/PNG).
+- 🎙️ **Virtual Microphone Injection**: Plays audio from your virtual video directly into apps requesting microphone access (`AudioRecord`), complete with dynamic resampling (16kHz / 44.1kHz / 48kHz, mono & stereo) so voices sound natural without pitch or speed distortion.
+- 🔄 **Rotation & Aspect Ratio Fit**: Rotate video by `0°`, `90°`, `180°`, or `270°` with automatic letterboxing (black bars) or center-crop to prevent image stretching or diagonal skewing.
+- 🪞 **Mirror Flip Mode**: Horizontal flip option for front-facing / selfie cameras.
+- 🎛️ **Floating Controller Overlay**: A movable on-screen bubble allowing you to toggle virtual/real camera, rotate, flip, pause/play video, or switch mic modes in real-time without leaving your target app!
+- 🛡️ **Anti-Detection (eKYC Liveness Bypass)**: Adds subtle micro-noise to the camera luma plane to defeat static-frame checks and simulates flash/torch response.
+- 📂 **Built-in In-App File Picker**: Pick videos and images directly from your gallery inside the app — no need for manual file managers or renaming.
+- ⚡ **Zero-Lag Architecture**: Uses an in-memory configuration cache (`vcam_config.json`) instead of repetitive disk reading, preventing frame drops.
+- 📱 **Camera1 & Camera2 Support**: Full compatibility with both legacy Camera1 API and modern Camera2 API.
 
-## 📱 Supported Platforms
+---
 
-- Android 5.0+ (API 21+)
-- Requires Xposed framework (such as LSPosed, EdXposed, etc.)
+## 📋 Requirements
 
-## 📦 Download & Installation
+1. A rooted Android device (Android 7.0 up to Android 15/16).
+2. An active Xposed framework (e.g., **LSPosed**, EdXposed, or KernelSU/APatch Zygisk-LSPosed).
 
-### Download
+---
 
-- **GitHub Releases**: [Latest Version](https://github.com/w2016561536/android_virtual_cam/releases)
-- **China Mainland Mirror (Gitee)**: https://gitee.com/w2016561536/android_virtual_cam
+## 🚀 Quick Start Guide
 
-### Installation Steps
+### Step 1: Install & Enable the Module
+1. Download the latest APK from the [Releases](https://github.com/NaufalSaputraa/VCAM/releases) page or build it using `./gradlew assembleDebug`.
+2. Install the APK on your device.
+3. Open your Xposed manager (e.g. **LSPosed**):
+   - Enable the **VCAM** module.
+   - In the **Scope** section, check the target apps where you want the virtual camera to work (e.g., Camera app, WhatsApp, Zoom, test app).
+   - *Note: Do NOT select System Framework.*
+4. Restart your target app (or reboot your device).
 
-1. Download the latest APK file
-2. Install the APK on your Android device
-3. Enable the module in Xposed framework
-4. Reboot device to activate the module
+### Step 2: Grant Storage Permission
+1. Open the **VCAM** app on your phone.
+2. Tap **"Grant Full Storage Access"** and enable **"All files access"** (required for Android 11+).
+3. If using the floating bubble, allow **"Display over other apps"** when prompted.
 
-## 📖 Usage
+### Step 3: Pick Your Replacement Video & Photo
+1. In the VCAM app, tap **"Choose & Set Replacement Video"** to pick any `.mp4` file from your device.
+2. *(Optional)* Tap **"Choose & Set Replacement Image"** to pick a picture for snapshot capture (automatically converted to 24-bit BMP).
+3. Set your desired **Rotation**, **Mirror mode**, and **Virtual Audio** toggles.
 
-### Basic Configuration
+### Step 4: Open Your Target App
+- Open your target app and start the camera.
+- Your replacement video will now play seamlessly as the camera feed!
 
-1. **Enable Module**
-   - Enable this module in Xposed framework (such as LSPosed)
-   - For scoped frameworks like LSPosed, select the target app, **no need to select System Framework**
-   - Reboot target app or device
+---
 
-2. **Grant Permissions**
-   - In system settings, grant storage read permission to target app
-   - Force stop the target app
-   - If the app doesn't request this permission, see step 3
+## 🎛️ Using the Floating Controller
 
-3. **Determine Working Directory**
-   - Open target app; if it lacks storage permission, a toast message will appear
-   - Private directory mode: `/[Internal Storage]/Android/data/[package name]/files/Camera1/`
-   - Shared directory mode: `/[Internal Storage]/DCIM/Camera1/`
-   - Create the directory manually if it doesn't exist
-   
-   > 💡 **Tip**: `Camera1` in private directory only affects that specific app
+Tap **"Open Floating Controller Overlay"** inside the VCAM app:
+- A small floating camera icon will appear over your screen.
+- **Drag** it anywhere along the edge of your screen.
+- **Tap** it to open quick controls:
+  - 🎥 **Virtual Cam**: Toggle between your virtual video and your real physical camera.
+  - 🔄 **Rotate**: Rotate the feed by 90° increments instantly.
+  - ⏸ **Pause/Play**: Freeze or resume video playback.
+  - 🪞 **Mirror**: Flip between mirror and normal mode.
+  - 🎙️ **Mic**: Toggle virtual microphone on/off.
 
-### Video and Photo Configuration
+---
 
-4. **Prepare Replacement Video**
-   - Open camera preview in target app
-   - Check the resolution (width × height) shown in toast message
-   - Create a replacement video matching this resolution
-   - Name the video as `virtual.mp4` and place it in `Camera1` directory
-   - If no toast message appears, no need to adjust video resolution
+## 📁 File Storage Paths
 
-5. **Prepare Replacement Photo (Optional)**
-   - When taking photos in target app, if real photo shows and toast message appears with "发现拍照"
-   - Check the photo resolution in toast message
-   - Prepare an image with the same resolution, name it as `1000.bmp`
-   - Place it in `Camera1` directory (supports other formats renamed to bmp)
-   - If no toast message when taking photos, no need for `1000.bmp`
+VCAM looks for replacement media in the following directories:
 
-### Function Switch Configuration
+| Mode | Storage Location | Description |
+|---|---|---|
+| **Shared (Default)** | `/sdcard/DCIM/Camera1/` | Shared across all target apps |
+| **Private (App-specific)** | `/sdcard/Android/data/<package_name>/files/Camera1/` | Applies only to that specific app |
 
-This module provides 5 function switches with two configuration methods:
+### Key Files in `Camera1/`:
+- `virtual.mp4`: The replacement video file.
+- `virtual.bmp` (or `1000.bmp`): The replacement photo file.
+- `vcam_config.json`: Centralized settings generated automatically by the app.
 
-#### Method 1: Use App Interface (Recommended)
+---
 
-Open the VCAM app and configure using visual switches:
+## ❓ Troubleshooting & FAQ
 
-- **Force Show Permission Warning**: Repeatedly show directory redirection toast
-- **Temporarily Disable Module**: Temporarily stop video replacement
-- **Play Video Sound**: Play audio from replacement video
-- **Force Private Directory**: Separate video for each app
-- **Disable Toast Messages**: Turn off all toast notifications
+### 1. The target app shows a black screen or real camera:
+- Make sure the target app is ticked in **LSPosed Scope**.
+- Force-stop the target app and open it again.
+- Verify that `virtual.mp4` exists in `/sdcard/DCIM/Camera1/`.
 
-#### Method 2: Manual File Creation
+### 2. The video is rotated or looks stretched:
+- Open VCAM and select the matching **Rotation** (`90°`, `180°`, or `270°`).
+- Select **Aspect Ratio Scaling**:
+  - `Fit (Letterbox)`: Keeps original aspect ratio with black bars.
+  - `Fill (Crop)`: Fills entire screen by cropping center.
+  - `Stretch`: Stretches video to fill camera dimensions.
 
-Create corresponding files in `/[Internal Storage]/DCIM/Camera1/` directory:
+### 3. Audio sounds distorted or fast/slow:
+- VCAM v5.0 automatically detects the target app's requested sample rate and resamples audio. Ensure **Virtual Audio Injection** switch is turned ON.
 
-| Function | Filename | Description |
-|----------|----------|-------------|
-| Play video sound | `no-silent.jpg` | Enable video audio playback |
-| Temporarily disable | `disable.jpg` | Temporarily stop replacement |
-| Disable toast | `no_toast.jpg` | Turn off toast notifications |
-| Force show warning | `force_show.jpg` | Repeatedly show redirection message |
-| Force private dir | `private_dir.jpg` | Force all apps to use private directory |
+---
 
-> 💡 **Tip**: All configuration switches take effect globally in real-time without restart
-
-## ❓ FAQ
-
-### Q1. Front camera orientation issue?
-**A1.** In most cases, videos for replacing front camera need to be flipped horizontally and rotated 90 degrees clockwise, and the video resolution ***after processing*** should match the resolution in toast message. But sometimes this is not needed; please judge according to actual situation.
-
-### Q2. Black screen or camera fails to start?
-**A2.** Currently some apps cannot be hooked successfully (especially system camera). Or it's due to wrong video path (whether two levels of Camera1 directory were created, like `./DCIM/Camera1/Camera1/virtual.mp4`, but only one level is needed).
-
-### Q3. Blurred screen?
-**A3.** Wrong video resolution.
-
-### Q4. Distorted or deformed picture?
-**A4.** Please use video editing software to modify the original video to match the screen.
-
-### Q5. Creating `disable.jpg` doesn't work?
-**A5.**
-- If app version `<=4.0`, files in `[Internal Storage]/DCIM/Camera1` directory work for apps **with storage access permission**; apps without permission should create in **private directory**
-- If app version `>=4.1`, should create in `[Internal Storage]/DCIM/Camera1` regardless of whether target app has permission
-
-## 🔧 Development & Build
-
-### Version Info
-
-- **Current Version**: v4.4 (versionCode 28)
-- **Compile SDK**: Android 12 (API 31)
-- **Minimum Support**: Android 5.0 (API 21)
-- **Target SDK**: Android 8.0 (API 26)
-
-### Automated Build
-
-This project uses GitHub Actions for automated building and releasing:
-
-- **Continuous Integration**: Automatic compilation verification on every code push
-- **Auto Release**: Automatically build signed APK and publish Release when creating new tags
-- **Workflow Config**: See [.github/workflows/android-build.yml](.github/workflows/android-build.yml)
-- **Detailed Documentation**: See [WORKFLOW_CHANGES.md](WORKFLOW_CHANGES.md)
-
-### Local Build
+## 🛠️ Building from Source
 
 ```bash
-# Clone repository
-git clone https://github.com/w2016561536/android_virtual_cam.git
-cd android_virtual_cam
+# Clone the repository
+git clone https://github.com/NaufalSaputraa/VCAM.git
+cd VCAM
 
-# Build debug version
+# Build Debug APK
 ./gradlew assembleDebug
 
-# Build release version (requires signing configuration)
-./gradlew assembleRelease
+# Output APK location:
+# app/build/outputs/apk/debug/app-debug.apk
 ```
 
-## 🐛 Report Issues
+---
 
-Please report directly in [Issues](https://github.com/w2016561536/android_virtual_cam/issues).
+## 📜 Credits & License
 
-For bug reports, please include:
-- Xposed **module** log information
-- Android system version
-- Xposed framework type and version
-- Target app information
-- Steps to reproduce
-
-## 🙏 Credits
-
-- HOOK method reference: [CameraHook](https://github.com/wangwei1237/CameraHook)
-- H264 hardware decode: [Android-VideoToImages](https://github.com/zhantong/Android-VideoToImages)
-- JPEG to YUV conversion: [Blog post](https://blog.csdn.net/jacke121/article/details/73888732)
-
-## 📜 License
-
-This project is for learning and research purposes only. Do not use for any illegal activities.
-
-## ⭐ Support
-
-If this project helps you, please give it a Star ⭐️
+- Original implementation by [@w2016561536](https://github.com/w2016561536/android_virtual_cam) & [@Cross2pro](https://github.com/Cross2pro/android_VCAM-Revise).
+- Enhanced and modernized by [@NaufalSaputraa](https://github.com/NaufalSaputraa).
+- Licensed under the [MIT License](./LICENSE).
