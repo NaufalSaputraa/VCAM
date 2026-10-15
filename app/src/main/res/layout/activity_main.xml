@@ -76,6 +76,155 @@
                 android:padding="12dp" />
         </LinearLayout>
 
+        <!-- Media Management Section (Modern Android 11-17) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/white"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp"
+            android:elevation="2dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/media_management_title"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tv_media_dir"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Target: /DCIM/Camera1/"
+                android:textSize="13sp"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tv_video_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Video: Checking..."
+                android:textSize="13sp"
+                android:textColor="@color/warning_red"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btn_grant_storage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_grant_storage"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <Button
+                android:id="@+id/btn_pick_video"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_pick_video"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <Button
+                android:id="@+id/btn_pick_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_pick_image"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Video Adjustments & Advanced Controls Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/white"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp"
+            android:elevation="2dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/transformation_title"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rotation_title"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="4dp" />
+
+            <Spinner
+                android:id="@+id/spinner_rotation"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:entries="@array/rotation_options"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/scale_mode_title"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="4dp" />
+
+            <Spinner
+                android:id="@+id/spinner_scale_mode"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:entries="@array/scale_mode_options"
+                android:layout_marginBottom="12dp" />
+
+            <Switch
+                android:id="@+id/switch_mirror"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/switch_mirror"
+                android:minHeight="48dp"
+                android:textSize="15sp"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <Switch
+                android:id="@+id/switch_virtual_mic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/switch_virtual_mic"
+                android:minHeight="48dp"
+                android:textSize="15sp"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <Switch
+                android:id="@+id/switch_anti_ekyc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/switch_anti_ekyc"
+                android:minHeight="48dp"
+                android:textSize="15sp"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btn_toggle_floating"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_toggle_floating"
+                android:textSize="14sp" />
+        </LinearLayout>
+
         <!-- Settings Section -->
         <LinearLayout
             android:layout_width="match_parent"

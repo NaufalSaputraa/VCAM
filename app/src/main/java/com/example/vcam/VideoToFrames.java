@@ -16,6 +16,7 @@ import com.example.vcam.HookMain;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import de.robv.android.xposed.XposedBridge;
@@ -211,9 +212,26 @@ public class VideoToFrames implements Runnable {
                             }
                         }
                         if (outputImageFormat != null) {
-                            HookMain.data_buffer = getDataFromImage(image, COLOR_FormatNV21);
+                            byte[] nv21 = getDataFromImage(image, COLOR_FormatNV21);
+                            if (HookMain.config != null) {
+                                if (HookMain.config.mirror) {
+                                    nv21 = mirrorNV21(nv21, width, height);
+                                }
+                                if (HookMain.config.rotation > 0) {
+                                    nv21 = rotateAndFitNV21(nv21, width, height, HookMain.config.rotation, HookMain.config.scaleMode);
+                                }
+                                if (HookMain.config.antiDetection) {
+                                    AntiDetection.processFrame(nv21, width, height, true, HookMain.config.noiseIntensity);
+                                }
+                            }
+                            HookMain.data_buffer = nv21;
                         }
                         image.close();
+                    }
+                    while (HookMain.config != null && HookMain.config.playbackPaused && !stopDecode) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException ignored) {}
                     }
                     long sleepTime = info.presentationTimeUs / 1000 - (System.currentTimeMillis() - startWhen);
                     if (sleepTime > 0) {
@@ -338,6 +356,182 @@ public class VideoToFrames implements Runnable {
         return data;
     }
 
+    public static byte[] rotateAndFitNV21(byte[] data, int width, int height, int rotation, String scaleMode) {
+        if (data == null || rotation == 0) return data;
+        if (rotation == 180) {
+            return rotateNV21(data, width, height, 180);
+        }
+        if (rotation == 90 || rotation == 270) {
+            byte[] rotated = rotateNV21(data, width, height, rotation);
+            // Rotated frame dimension is (height, width)
+            return fitNV21(rotated, height, width, width, height, scaleMode);
+        }
+        return data;
+    }
+
+    public static byte[] fitNV21(byte[] src, int srcW, int srcH, int dstW, int dstH, String scaleMode) {
+        if (src == null || srcW <= 0 || srcH <= 0 || dstW <= 0 || dstH <= 0) return src;
+        int dstFrameSize = dstW * dstH;
+        byte[] dst = new byte[dstFrameSize * 3 / 2];
+
+        // Fill with black / neutral YUV: Y = 16, VU = 128
+        Arrays.fill(dst, 0, dstFrameSize, (byte) 16);
+        Arrays.fill(dst, dstFrameSize, dst.length, (byte) 128);
+
+        int scaledW, scaledH, offsetX, offsetY;
+        if ("stretch".equalsIgnoreCase(scaleMode)) {
+            scaledW = dstW;
+            scaledH = dstH;
+            offsetX = 0;
+            offsetY = 0;
+        } else if ("fill".equalsIgnoreCase(scaleMode)) {
+            double scale = Math.max((double) dstW / srcW, (double) dstH / srcH);
+            scaledW = (int) Math.round(srcW * scale) & ~1;
+            scaledH = (int) Math.round(srcH * scale) & ~1;
+            offsetX = ((dstW - scaledW) / 2) & ~1;
+            offsetY = ((dstH - scaledH) / 2) & ~1;
+        } else {
+            // Default: "fit" (letterbox)
+            double scale = Math.min((double) dstW / srcW, (double) dstH / srcH);
+            scaledW = (int) Math.round(srcW * scale) & ~1;
+            scaledH = (int) Math.round(srcH * scale) & ~1;
+            offsetX = ((dstW - scaledW) / 2) & ~1;
+            offsetY = ((dstH - scaledH) / 2) & ~1;
+        }
+
+        int srcFrameSize = srcW * srcH;
+
+        // Sample Y plane
+        int startY = Math.max(0, offsetY);
+        int endY = Math.min(dstH, offsetY + scaledH);
+        int startX = Math.max(0, offsetX);
+        int endX = Math.min(dstW, offsetX + scaledW);
+
+        for (int dy = startY; dy < endY; dy++) {
+            int sy = ((dy - offsetY) * srcH) / scaledH;
+            if (sy < 0) sy = 0;
+            if (sy >= srcH) sy = srcH - 1;
+            int srcRow = sy * srcW;
+            int dstRow = dy * dstW;
+
+            for (int dx = startX; dx < endX; dx++) {
+                int sx = ((dx - offsetX) * srcW) / scaledW;
+                if (sx < 0) sx = 0;
+                if (sx >= srcW) sx = srcW - 1;
+                dst[dstRow + dx] = src[srcRow + sx];
+            }
+        }
+
+        // Sample VU plane (2x2 subsampled)
+        int uvStartY = startY / 2;
+        int uvEndY = (endY + 1) / 2;
+        int uvStartX = startX / 2;
+        int uvEndX = (endX + 1) / 2;
+        int dstUvHeight = dstH / 2;
+        int srcUvHeight = srcH / 2;
+
+        for (int duy = uvStartY; duy < uvEndY && duy < dstUvHeight; duy++) {
+            int suy = ((duy * 2 - offsetY) * srcH) / (scaledH * 2);
+            if (suy < 0) suy = 0;
+            if (suy >= srcUvHeight) suy = srcUvHeight - 1;
+
+            int srcUvRow = srcFrameSize + suy * srcW;
+            int dstUvRow = dstFrameSize + duy * dstW;
+
+            for (int dux = uvStartX; dux < uvEndX && dux < (dstW / 2); dux++) {
+                int sux = ((dux * 2 - offsetX) * srcW) / (scaledW * 2);
+                if (sux < 0) sux = 0;
+                if (sux >= (srcW / 2)) sux = (srcW / 2) - 1;
+
+                int srcIndex = srcUvRow + sux * 2;
+                int dstIndex = dstUvRow + dux * 2;
+                if (srcIndex + 1 < src.length && dstIndex + 1 < dst.length) {
+                    dst[dstIndex] = src[srcIndex];         // V
+                    dst[dstIndex + 1] = src[srcIndex + 1]; // U
+                }
+            }
+        }
+
+        return dst;
+    }
+
+    public static byte[] rotateNV21(byte[] data, int width, int height, int rotation) {
+        if (rotation == 0 || data == null) return data;
+        int frameSize = width * height;
+        byte[] rotated = new byte[data.length];
+
+        if (rotation == 90) {
+            int k = 0;
+            for (int i = 0; i < width; i++) {
+                for (int j = height - 1; j >= 0; j--) {
+                    rotated[k++] = data[j * width + i];
+                }
+            }
+            int uvHeight = height / 2;
+            int uvStartIndex = frameSize;
+            int n = frameSize;
+            for (int i = 0; i < width; i += 2) {
+                for (int j = uvHeight - 1; j >= 0; j--) {
+                    rotated[n++] = data[uvStartIndex + j * width + i];
+                    rotated[n++] = data[uvStartIndex + j * width + i + 1];
+                }
+            }
+            return rotated;
+        } else if (rotation == 180) {
+            int k = 0;
+            for (int i = frameSize - 1; i >= 0; i--) {
+                rotated[k++] = data[i];
+            }
+            int n = frameSize;
+            for (int i = data.length - 2; i >= frameSize; i -= 2) {
+                rotated[n++] = data[i];
+                rotated[n++] = data[i + 1];
+            }
+            return rotated;
+        } else if (rotation == 270) {
+            int k = 0;
+            for (int i = width - 1; i >= 0; i--) {
+                for (int j = 0; j < height; j++) {
+                    rotated[k++] = data[j * width + i];
+                }
+            }
+            int uvHeight = height / 2;
+            int uvStartIndex = frameSize;
+            int n = frameSize;
+            for (int i = width - 2; i >= 0; i -= 2) {
+                for (int j = 0; j < uvHeight; j++) {
+                    rotated[n++] = data[uvStartIndex + j * width + i];
+                    rotated[n++] = data[uvStartIndex + j * width + i + 1];
+                }
+            }
+            return rotated;
+        }
+        return data;
+    }
+
+    public static byte[] mirrorNV21(byte[] data, int width, int height) {
+        if (data == null) return null;
+        byte[] mirrored = new byte[data.length];
+        // Mirror Y plane
+        for (int y = 0; y < height; y++) {
+            int rowStart = y * width;
+            for (int x = 0; x < width; x++) {
+                mirrored[rowStart + x] = data[rowStart + (width - 1 - x)];
+            }
+        }
+        // Mirror VU plane (interleaved pairs)
+        int frameSize = width * height;
+        int uvHeight = height / 2;
+        for (int y = 0; y < uvHeight; y++) {
+            int rowStart = frameSize + y * width;
+            for (int x = 0; x < width; x += 2) {
+                int targetX = width - 2 - x;
+                mirrored[rowStart + x] = data[rowStart + targetX];
+                mirrored[rowStart + x + 1] = data[rowStart + targetX + 1];
+            }
+        }
+        return mirrored;
+    }
 
 }
 

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <!-- Collapsed Floating Bubble -->
+    <LinearLayout
+        android:id="@+id/layout_bubble"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:background="#DD1E293B"
+        android:elevation="8dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_bubble_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🎥"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+    <!-- Expanded Controller Panel -->
+    <LinearLayout
+        android:id="@+id/layout_expanded"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:background="#F00F172A"
+        android:elevation="12dp"
+        android:orientation="vertical"
+        android:padding="14dp"
+        android:visibility="gone">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="VCAM Controller"
+                android:textColor="#38BDF8"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_collapse"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="#334155"
+                android:text="✕"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="#334155" />
+
+        <!-- Master Switch -->
+        <Switch
+            android:id="@+id/sw_float_enable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Virtual Camera Feed"
+            android:textColor="#F8FAFC"
+            android:textSize="13sp" />
+
+        <!-- Play / Pause -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_float_play_pause"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:background="#1E293B"
+                android:text="⏸ Pause Video"
+                android:textColor="#E2E8F0"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_float_rotate"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:background="#1E293B"
+                android:text="🔄 Putar 90°"
+                android:textColor="#E2E8F0"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Mirror & Anti-eKYC Switches -->
+        <Switch
+            android:id="@+id/sw_float_mirror"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Cermin / Mirror (Selfie)"
+            android:textColor="#E2E8F0"
+            android:textSize="12sp" />
+
+        <Switch
+            android:id="@+id/sw_float_liveness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Bypass eKYC (Noise+Flash)"
+            android:textColor="#E2E8F0"
+            android:textSize="12sp" />
+
+        <Switch
+            android:id="@+id/sw_float_mic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Virtual Mic (Audio Feed)"
+            android:textColor="#E2E8F0"
+            android:textSize="12sp" />
+
+        <!-- Exit Floating Controller -->
+        <Button
+            android:id="@+id/btn_float_stop_service"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:layout_marginTop="10dp"
+            android:background="#7F1D1D"
+            android:text="Tutup Kontrol Melayang"
+            android:textColor="#FECACA"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+</FrameLayout>

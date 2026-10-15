@@ -14,4 +14,22 @@
     <string name="positive">Sure</string>
     <string name="negative">Refuse</string>
     <string name="settings_title">Settings</string>
+    <string name="media_management_title">Virtual Media Management</string>
+    <string name="media_path_label">Target Directory: %1$s</string>
+    <string name="video_status_found">Video Status: Found (%1$s)</string>
+    <string name="video_status_not_found">Video Status: virtual.mp4 NOT found!</string>
+    <string name="btn_pick_video">Choose &amp; Set Replacement Video (virtual.mp4)</string>
+    <string name="btn_pick_image">Choose &amp; Set Replacement Image (BMP)</string>
+    <string name="btn_grant_storage">Grant Full Storage Access (Android 11-17)</string>
+    <string name="permission_granted">Storage Permission Granted</string>
+    <string name="video_imported_success">Video successfully imported to virtual.mp4!</string>
+    <string name="image_imported_success">Image successfully imported and converted!</string>
+    <string name="import_failed">Failed to import file: %1$s</string>
+    <string name="transformation_title">Video Adjustments &amp; Controls</string>
+    <string name="rotation_title">Video Rotation Angle</string>
+    <string name="switch_mirror">Mirror Flip (Horizontal / Selfie Mode)</string>
+    <string name="scale_mode_title">Aspect Ratio Scaling</string>
+    <string name="switch_virtual_mic">Virtual Audio Injection (Mic Loopback)</string>
+    <string name="switch_anti_ekyc">Bypass eKYC (Noise &amp; Flash Sim)</string>
+    <string name="btn_toggle_floating">🎛️ Open Floating Controller Overlay</string>
 </resources>

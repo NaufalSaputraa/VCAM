@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="xposed_scope">
+        <item>android</item>
+    </string-array>
+
+    <string-array name="rotation_options">
+        <item>0° (Default)</item>
+        <item>90° Clockwise</item>
+        <item>180° Inverted</item>
+        <item>270° Counter-Clockwise</item>
+    </string-array>
+
+    <string-array name="scale_mode_options">
+        <item>Fit (Keep Aspect Ratio)</item>
+        <item>Fill / Crop (Center Crop)</item>
+        <item>Stretch to Target</item>
+    </string-array>
+</resources>
